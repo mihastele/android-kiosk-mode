@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kiosk mode application</string>
+    <string name="admin_description">admin</string>
 </resources>

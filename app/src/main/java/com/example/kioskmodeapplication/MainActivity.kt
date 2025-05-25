@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectAppButton: Button
     private lateinit var exitKioskButton: Button
     private var selectedAppPackage: String? = null
+    private val kioskServiceIntent by lazy { Intent(this, KioskService::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +69,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Start kiosk service to prevent app from being closed
-        startService(Intent(this, KioskService::class.java))
+//        startService(Intent(this, KioskService::class.java))
+        startService(kioskServiceIntent)
     }
 
     override fun onStart() {
@@ -86,7 +88,8 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         // Start service to bring back our activity if another app comes to foreground
-        startService(Intent(this, KioskService::class.java))
+//        startService(Intent(this, KioskService::class.java))
+        startService(kioskServiceIntent)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -215,10 +218,8 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                     
                     // Start kiosk service to monitor the app
-                    val serviceIntent = Intent(this, KioskService::class.java).apply {
-                        putExtra("TARGET_PACKAGE", pkg)
-                    }
-                    startService(serviceIntent)
+                    kioskServiceIntent.putExtra(KioskService.EXTRA_TARGET_PACKAGE, pkg)
+                    startService(kioskServiceIntent)
                 } else {
                     Toast.makeText(this, "Could not launch app", Toast.LENGTH_SHORT).show()
                 }
@@ -249,7 +250,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             stopLockTask()
         }
-        stopService(Intent(this, KioskService::class.java))
+        stopService(kioskServiceIntent)
         Toast.makeText(this, "Exiting kiosk mode", Toast.LENGTH_SHORT).show()
         finish()
     }
